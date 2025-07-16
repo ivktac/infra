@@ -1,0 +1,22 @@
+<VirtualHost *:80>
+  ServerName {{ item.name }}.{{ domain_base }}
+{% if item.server_alais %}
+  {% for alias in item.server_alias %}
+  ServerAlias {{ alias }}
+  {% endfor %}
+{% endif %}
+
+  ProxyPass / http://{{ proxy_host }}:{{ item.port }}/
+  ProxyPassReverse / http://{{ proxy_host }}:{{ item.port }}/
+
+{% if item.enable_logging %}
+  ErrorLog {{ log_path }}/{{ item.name }}.{{ domain_base }}-error_log
+  CustomLog {{ log_path }}/{{ item.name }}.{{ domain_base }}-access_log combined
+{% endif %}
+
+{% if item.custom_config %}
+  {% for config_line in item.custom_config %}
+  {{ config_line }}
+  {% endfor }
+{% endif %}
+</VirtualHost>

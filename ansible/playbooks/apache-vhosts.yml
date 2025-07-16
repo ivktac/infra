@@ -1,0 +1,84 @@
+---
+- name: Create Apache Virtual hosts
+  hosts: webservers
+  become: yes
+
+  tasks:
+    - name: Ensure Apache sites directories exist
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+      loop:
+        - "{{ apache_sites_available }}"
+        - "{{ apache_sites_enabled }}"
+
+    - name: Ensure log directory exists
+      file:
+        path: "{{ log_path }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+      when: vhosts | selectattr('enable_logging', 'equalto', true) | list | length > 0
+
+    - name: Create virtual host configuration
+      template:
+        src: vhost.conf.j2
+        dest: "{{ apache_sites_available }}/{{ item.name }}.{{ domain_base }}.conf"
+        backup: yes
+        owner: root
+        group: root
+        mode: '0644'
+      loop: "{{ vhosts }}"
+      notify:
+        - restart apache
+
+    - name: Enable virtual host
+      file:
+        src: "{{ apache_sites_available }}/{{ item.name }}.{{ domain_base }}.conf"
+        dest: "{{ apache_sites_enabled }}/{{ item.name }}.{{ domain_base }}.conf"
+        state: link
+      loop: "{{ vhosts }}"
+      notify: reload apache
+
+    - name: Check Apache configuration
+      command: "{{ apache_service_name }} -t"
+      register: apache_config_check
+      failed_when: apache_config_check.rs != 0
+      changed_when: false
+
+    - name: Check if SSL certificate exists
+      stat:
+        path: "{{ letsencrypt_path }}{{ item.name }}.{{ domain_base }}/fullchain.pem"
+      register: ssl_cert_check
+      loop: "{{ vhosts }}"  
+
+    - name: Run certbot for domains without SSL
+      command: >
+        certbot --apache
+        -d {{ item.item.name }}.{{ domain_base }}
+        {% for alais in item.item.server_alias %}-d {{ alias }} {% endfor %}
+        --non-interactive
+        --agree-tos
+        --email {{ certbot_email }}
+      loop: "{{ ssl_cert_check.results }}"
+      when: not item.stat.exists
+      ignore_errors: yes
+
+    - name: Display created virtual hosts
+      command: "{{ apache_service_name }} -S"
+      
+  handlers:
+    - name: reload apache
+      systemd:
+        name: "{{ apache_service_name }}"
+        state: reloaded
+
+    - name: restart apache
+      systemd:
+        name: "{{ apache_service_name }}"
+        state: restarted
+

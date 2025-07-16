@@ -1,0 +1,29 @@
+apache_config_path: "/etc/httpd/"
+
+apache_service_name: "httpd"
+
+apache_sites_available: "{{ apache_config_path }}/sites-available"
+
+apache_sites_enabled: "{{ apache_config_path }}/sites-enabled"
+
+letsencrypt_path: "/etc/letsencrypt/live"
+
+log_path: "/var/log/httpd"
+
+domain_base: "example.com"
+certbot_email: "admin@example.com"
+
+proxy_host: "localhost"
+
+vhosts:
+  - name: "vhost1"
+    port: 3001
+    enable_logging: false
+    server_alias: []
+    custom_config: []
+
+  - name: "vhost2"
+    port: 3002
+    enable_logging: true
+    server_alias: []
+    custom_config: []
