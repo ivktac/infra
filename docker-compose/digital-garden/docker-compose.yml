@@ -1,0 +1,13 @@
+services:
+  digital-garden:
+    container_name: docs
+    image: ghcr.io/ivktac/digital-garden:latest
+    restart: unless-stopped
+    volumes:
+      - docs_data:/usr/local/apache2/htdocs/
+    ports:
+      - 3001:80
+    pull_policy: always
+
+volumes:
+  docs_data:

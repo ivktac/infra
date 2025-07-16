@@ -1,0 +1,74 @@
+- name: Home
+  columns:
+    - size: small
+      widgets:
+        - type: calendar
+          first-day-of-week: monday
+
+        - type: rss
+          limit: 10
+          collapse-after: 3
+          cache: 12h
+          feeds:
+            - url: https://selfh.st/rss/
+              title: selfh.st
+            - url: https://thisweek.gnome.org/index.xml/
+              title: thisweek.gnome.org
+
+    - size: full
+      widgets:
+        - type: videos
+          channels:
+            - UCnIfca4LPFVn8-FjpPVc1ow
+            - UC5UAwBUum7CPN5buc-_N1Fw
+            - UC_zBdZ0_H_jn41FDRG7q4Tw
+            - UCZWadyLVO4ZnMgLrRVtS6VA
+            - UCyT3AcQaRx_yl1yYLa5ikXQ
+            - UC7YOGHUfC1Tb6E4pudI9STA
+            - UCVo_KgPNsDKxHwzib7uarCw
+
+        - type: group
+          widgets:
+            - type: reddit
+              subreddit: gnome
+              show-thumbnails: true
+            - type: reddit
+              subreddit: rust
+              show-thumbnails: true
+            - type: reddit
+              subreddit: selfhosted
+              show-thumbnails: true
+            - type: reddit
+              subreddit: linux
+              show-thumbnails: true
+            - type: reddit
+              subreddit: fedora
+              show-thumbnails: true
+
+    - size: small
+      widgets:
+        - type: weather
+          location: Chernivtsi, Ukraine
+          units: metric
+          hours-format: 24h
+
+        - type: to-do
+
+        - type: bookmarks
+          groups:
+            - title: Work
+              links:
+                - title: Gmail
+                  url: https://mail.google.com/mail/u/0/
+                - title: Cloudflare
+                  url: https://dash.cloudflare.com/
+                - title: Amazon
+                  url: https://www.amazon.com/
+                - title: Github
+                  url: https://github.com/
+                - title: Docs
+                  url: https://docs.gearxxed.com
+            - title: Entertainment
+              links:
+                - title: YouTube
+                  url: https://www.youtube.com/
